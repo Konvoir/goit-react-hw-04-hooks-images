@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import s from "./Searchbar.module.css"
 
-export const Searchbar = ({onSubmit}) => {
+export const Searchbar = (props) => {
     const [query, setQuery] = useState("");
 
     const  handleInputChange = e => { setQuery(e.target.value) }
 
     const handleSubmit = e => {
         e.preventDefault();
-        if (query.trim() === "") { return; }
-        onSubmit(query);
-        setQuery("")
-    }
+        if (query.trim() === "") {
+            toast.error('Enter the name of your picture theme');
+            return;
+        }
+        props.onSubmit(query, 1);
+        setQuery("");
+    };
     
  return (
             <header className={s.Searchbar}>
                 <form className={s.SearchForm}
-                    onSubmit={handleSubmit}
-                >
+                    onSubmit={handleSubmit} >
                     
                     <button type="submit" className={s.SearchFormButton}>
                         <span className={s.SearchFormButtonLabel}>Search</span>

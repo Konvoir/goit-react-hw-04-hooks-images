@@ -1,104 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
+import { ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Searchbar } from "./components/Searchbar/Searchbar";
 import { ImageGallery } from "./components/ImageGallery/ImageGallery";
-import { APIpixabay } from "./servises/APIpixabay";
-import Loader from "react-loader-spinner";
-import { Button } from "./components/Button/Button";
-import { Modal } from "./components/Modal/Modal";
 
 import s from "./App.module.css";
 
-const App = () => {
-  const [images, setImages] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [largeImageURL, setLargeImageURL] = useState("");
-  const [tag, setTag] = useState("");
+export default function App() {
+  const [stateSearchQuery, setStateSearchQuery] = useState("");
+  const [statePage, setStatePage] = useState(1);
 
-  useEffect(() => {
-    if (!searchQuery) return;
-    const fetchImages = async () => {
-      try {
-        const request = await APIpixabay(searchQuery, currentPage);
-        setIsLoaded(true);
-        if (images.length > 0) {
-          setImages((prevImages) => [...prevImages, ...request]);
-          setError(false);
-        }
-      } catch (error) {
-        setError(true);
-      } finally {
-        setIsLoaded(false);
-      }
-    };
-
-    fetchImages();
-  }, [searchQuery, currentPage, images.length]);
-
-  // if (images.length > 12) {
-  //   window.scrollTo({
-  //     top: document.documentElement.scrollHeight,
-  //     behavior: "smooth",
-  //   });
-  // }
-
-  const onChangeQuery = (query) => {
-    setImages([]);
-    setSearchQuery(query);
-    setCurrentPage(1);
-    setError(null);
+  const onChangeQuery = (searchQuery, page) => {
+    setStateSearchQuery(searchQuery);
+    setStatePage(page)
   };
+     return (
+      <div className={s.container}>
+        <Searchbar onSubmit={onChangeQuery}></Searchbar>
+         <ToastContainer autoClose={3000} />
+        <ImageGallery
+          searchQuery={stateSearchQuery}
+          page={statePage}
+          setPage={setStatePage}
+        ></ImageGallery>
 
-  const toggleModal = () => setShowModal(!showModal);
+      </div>
+    );
+  }
 
-  const onImageClick = () => {
-    setLargeImageURL(largeImageURL);
-    toggleModal();
-  };
+// App.propTypes = {};
 
-  const onButtonClick = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
 
-    // fetchImages();
-    // scrollPage();
-  };
+ // const [images, setImages] = useState([]);
+  // const [isLoaded, setIsLoaded] = useState(false);
+  // const [error, setError] = useState(null);
+  // const [showModal, setShowModal] = useState(false);
+  // const [largeImageURL, setLargeImageURL] = useState("");
+  // const [tag, setTag] = useState("");
 
-  const shouldRenderMoreButton = images.length > 0 && !isLoaded;
 
-  return (
-    <div className={s.container}>
-      <Searchbar onSubmit={onChangeQuery}></Searchbar>
-
-      {error && (
-        <h2>
-          Sorry something went wrong, try again later!(
-          {error.message})
-        </h2>
-      )}
-
-      <ImageGallery images={images} onClick={onImageClick}></ImageGallery>
-
-      {isLoaded && (
-        <Loader type="Puff" color="#00BFFF" height={100} width={100} />
-      )}
-
-      {shouldRenderMoreButton && <Button onClick={onButtonClick} />}
-
-      {showModal && (
-        <Modal
-          onClose={toggleModal}
-          largeImageURL={largeImageURL}
-          tag={tag}
-        ></Modal>
-      )}
-    </div>
-  );
-};
-
-export default App;
 
 // import React, { Component } from "react";
 // import { Searchbar } from "./components/Searchbar/Searchbar";
@@ -228,3 +168,5 @@ export default App;
 // }
 
 // App.propTypes = {};
+
+// export default App;

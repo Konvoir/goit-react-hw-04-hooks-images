@@ -1,30 +1,32 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import s from "./Modal.module.css"
 
 const modalRoot = document.querySelector("#modalRoot")
 
-export const Modal = ({ toggleModal, largeImageURL, tag }) => {
+export const Modal = (props) => {
 
     useEffect(() => {
-        const hendleKeydown = (e) => {
-            if (e.code === "Escape") { toggleModal() }
-        };
-        window.addEventListener("keydown", hendleKeydown);
+        window.addEventListener("keydown", handleKeydown);
         return () => {
-            window.removeEventListener("keydown", hendleKeydown)
+            window.removeEventListener("keydown", handleKeydown)
         }
-    }, [toggleModal]);
-       
-    const hendleBackdropClick = (e) => {
-        if (e.target === e.currentTarget) { toggleModal() }
+    })
+
+    const handleKeydown = (e) => {
+        if (e.code === "Escape") { props.closeModal() }
     };
+
+const hendleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) { props.closeModal() }
+    };
+
     return createPortal(
         <div className={s.Overlay}
             onClick={hendleBackdropClick}
         >
-            <div className={s.Modal}>{<img src={largeImageURL} alt={tag} />}</div>
+            <div className={s.Modal}>{<img src={props.largeImageURL} alt="" />}</div>
         </div>,
         modalRoot,
     );
